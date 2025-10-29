@@ -23,7 +23,17 @@ const outputDiv = document.getElementById('output');
 const blocklyDiv = document.getElementById('blocklyDiv');
 const ws = Blockly.inject(blocklyDiv, {
   toolbox: toolbox,
-  theme: DarkTheme});
+  theme: DarkTheme,
+  renderer: 'zelos',
+  zoom: {
+    controls: true, // Adiciona botões de zoom (+ e -) e ajuste
+    wheel: true,    // Habilita o zoom com a roda do mouse/scroll
+    startScale: 1.0, // Nível de zoom inicial
+    maxScale: 3,     // Zoom máximo permitido
+    minScale: 0.3,   // Zoom mínimo permitido
+    scaleSpeed: 1.2  // Velocidade de alteração do zoom
+  }
+});
 
 // This function resets the code and output divs, shows the
 // generated code from the workspace, and evals the code.

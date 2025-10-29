@@ -116,6 +116,23 @@ forBlock['turn_off_led_two'] = function (block, generator) {
   return code;
 }
 
+forBlock['ir_controller_read'] = function (block, generator) {
+  const code = 'ir_controller_read()'; 
+  return [code, Order.FUNCTION_CALL];
+}
+
+forBlock['ir_controller_key'] = function (block, generator) {
+  // Obtém o valor selecionado no dropdown (o segundo elemento da array de options)
+  const key = block.getFieldValue('KEY');
+  
+  // O código Python será a string literal da tecla, entre aspas.
+  // Ex: "'KEY_UP'"
+  const code = generator.quote_(key); 
+  
+  // Retorna a string de código e a precedência para string literal.
+  return [code, Order.ATOMIC]; // Order.ATOMIC é para valores literais
+}
+
 forBlock['program_setup'] = function(block, generator) {
   // Extrai o código dos blocos conectados à área de encaixe "DO"
   const statements = generator.statementToCode(block, 'DO');

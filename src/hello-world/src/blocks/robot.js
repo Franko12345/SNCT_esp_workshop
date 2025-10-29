@@ -253,6 +253,50 @@ const getUltrasonicDistance = {
   "colour": "#B941F1"
 };
 
+const getControllerButton = {
+  "type": "ir_controller_read",
+  "message0": "Tecla pressionada (IR)",
+  "output": "String",
+  "colour": 30,
+  "tooltip": "Lê o código da última tecla pressionada no controle remoto IR. Retorna uma String vazia se nenhuma tecla for pressionada.",
+  "helpUrl": "",
+  "colour": "#B941F1"
+}
+
+const conrollerButtons = {
+  "type": "ir_controller_key",
+  "message0": "Tecla %1",
+  "args0": [
+    {
+      "type": "field_dropdown",
+      "name": "KEY",
+      "options": [
+        ["0", "KEY_0"],
+        ["1", "KEY_1"],
+        ["2", "KEY_2"],
+        ["3", "KEY_3"],
+        ["4", "KEY_4"],
+        ["5", "KEY_5"],
+        ["6", "KEY_6"],
+        ["7", "KEY_7"],
+        ["8", "KEY_8"],
+        ["9", "KEY_9"],
+        ["Esquerda", "KEY_LEFT"],
+        ["Direita", "KEY_RIGHT"],
+        ["Cima", "KEY_UP"],
+        ["Baixo", "KEY_DOWN"],
+        ["Centro", "KEY_CENTER"],
+        ["Ponto (##)", "KEY_POUND"],
+        ["Asterisco (*)", "KEY_ASTERISK"]
+      ]
+    }
+  ],
+  "output": "String",
+  "colour": "#B941F1",
+  "tooltip": "Seleciona uma tecla específica do controle remoto IR. Retorna o código da tecla como String.",
+  "helpUrl": ""
+};
+
 const setup = {
   "type": "program_setup",
   "message0": "Quando Iniciar: %1",
@@ -308,6 +352,8 @@ export const robotBlocks = Blockly.common.createBlockDefinitionsFromJsonArray([
   turnOnLedTwo,
   turnOffLedTwo,
   getUltrasonicDistance,
+  getControllerButton,
   setup,
   loop,
+  conrollerButtons
 ]);
