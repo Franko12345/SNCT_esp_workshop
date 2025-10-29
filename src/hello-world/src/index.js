@@ -12,6 +12,7 @@ import {pythonGenerator} from 'blockly/python';
 import {save, load} from './serialization';
 import {toolbox} from './toolbox';
 import './index.css';
+import { text } from '@sveltejs/kit';
 
 // Register the blocks and generator with Blockly
 Blockly.common.defineBlocks(robotBlocks);
@@ -21,6 +22,7 @@ Object.assign(pythonGenerator.forBlock, forBlock);
 const codeDiv = document.getElementById('generatedCode').firstChild;
 const outputDiv = document.getElementById('output');
 const blocklyDiv = document.getElementById('blocklyDiv');
+const textarea = document.getElementById('code');
 const ws = Blockly.inject(blocklyDiv, {
   toolbox: toolbox,
   theme: DarkTheme,
@@ -44,6 +46,7 @@ const runCode = () => {
 
   // STRING DO CÓDIGO GERADO
   codeDiv.innerText = code;
+  textarea.value = code;
 
   console.log("bolas");
 
@@ -102,7 +105,6 @@ ws.addChangeListener((e) => {
     const DEFAULT_SERVER = '0.0.0.0'; // altere aqui se desejar
 
     // Elementos
-    const textarea = document.getElementById('code');
     const sendBtn = document.getElementById('sendBtn');
     const runBtn = document.getElementById('runBtn');
     const logEl = document.getElementById('log');
@@ -149,9 +151,9 @@ ws.addChangeListener((e) => {
     async function sendCodeFlow(){
       const server = (serverInput.value || DEFAULT_SERVER).trim().replace(/\/+$/, ''); // remove trailing slash
       serverLabel.textContent = server;
-      // const code = textarea.value;
-      const code = pythonGenerator.workspaceToCode(ws);
-      // if (!code || code.trim().length === 0){ log('O campo está vazio — nada a enviar.', 'err'); return; }
+      const code = textarea.value;
+      // const code = pythonGenerator.workspaceToCode(ws);
+      if (!code || code.trim().length === 0){ log('O campo está vazio — nada a enviar.', 'err'); return; }
 
       // 1) enviar size como argumento (GET ?size=)
       setUIBusy(true, true);
