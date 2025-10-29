@@ -1,28 +1,39 @@
 from machine import Pin, PWM, time_pulse_us
 from time import sleep, sleep_us, ticks_us, ticks_diff
+from ultrassonic import HCSR04
 
 # === DEFINIÇÃO DE PINOS ===
 
-PIN_MOTOR_ESQ_t = 10
-PIN_MOTOR_ESQ_f = 11
-PIN_MOTOR_DIR_t = 12
-PIN_MOTOR_DIR_f = 13
+PIN_MOTOR_ESQ_t = 23
+PIN_MOTOR_ESQ_f = 22
+PIN_MOTOR_DIR_t = 32
+PIN_MOTOR_DIR_f = 33
 PIN_LED_1 = 18
-PIN_LED_2 = 19
-PIN_BUZZER = 17
-PIN_ULTRASONIC_ECHO = 15
-PIN_ULTRASONIC_TRIG = 14
-PIN_IR = 16
+PIN_LED_2 = 20
+PIN_BUZZER = 14
+PIN_ULTRASONIC_ECHO = 25
+PIN_ULTRASONIC_TRIG = 26
+PIN_IR = 27
 
 buzzer_freq = 1000
 buzzer_duracao = 0.3
 
 # Motores (controle simples — HIGH liga, LOW desliga)
-motor_frente_esq = PWM(Pin(PIN_MOTOR_ESQ_f, Pin.OUT), 1000)
-motor_tras_esq = PWM(Pin(PIN_MOTOR_ESQ_t, Pin.OUT), 1000)
+motor_frente_esq = PWM(Pin(PIN_MOTOR_ESQ_f, Pin.OUT, Pin.PULL_DOWN), 1000)
+motor_tras_esq = PWM(Pin(PIN_MOTOR_ESQ_t, Pin.OUT, Pin.PULL_DOWN), 1000)
 
-motor_frente_dir = PWM(Pin(PIN_MOTOR_DIR_f, Pin.OUT), 1000)
-motor_tras_dir = PWM(Pin(PIN_MOTOR_DIR_t, Pin.OUT), 1000)
+motor_frente_dir = PWM(Pin(PIN_MOTOR_DIR_f, Pin.OUT, Pin.PULL_DOWN), 1000)
+motor_tras_dir = PWM(Pin(PIN_MOTOR_DIR_t, Pin.OUT, Pin.PULL_DOWN), 1000)
+
+motor_frente_esq.deinit()
+motor_tras_esq.deinit()
+motor_frente_dir.deinit()
+motor_tras_dir.deinit()
+
+motor_frente_esq.init(1000, 0)
+motor_tras_esq.init(1000, 0)
+motor_frente_dir.init(1000, 0)
+motor_tras_dir.init(1000, 0)
 
 motor_left_speed = 512
 motor_right_speed = 512
@@ -30,14 +41,16 @@ drive_speed = 512
 
 
 # Sensor Ultrassônico
-trig = Pin(PIN_ULTRASONIC_TRIG, Pin.OUT)
-echo = Pin(PIN_ULTRASONIC_ECHO, Pin.IN)
+ultra = HCSR04(PIN_ULTRASONIC_TRIG, PIN_ULTRASONIC_ECHO)
 
 # Receptor IR
 ir_pin = Pin(PIN_IR, Pin.IN)
 
 # Buzzer
-buzzer = PWM(Pin(PIN_BUZZER), 1000)
+buzzer = PWM(Pin(PIN_BUZZER, Pin.OUT, Pin.PULL_DOWN), 1000)
+buzzer.deinit()
+buzzer.init(1000, 0)
+
 
 IR_CODES = {
     0x45: "1",
@@ -129,20 +142,7 @@ def girar_direita():
 
 # === FUNÇÕES DO SENSOR ULTRASSÔNICO ===
 def medir_distancia_cm():
-    trig.off()
-    sleep_us(2)
-    trig.on()
-    sleep_us(10)
-    trig.off()
-
-    while echo.value() == 0:
-        pulse_start = ticks_us()
-    while echo.value() == 1:
-        pulse_end = ticks_us()
-
-    duracao = ticks_diff(pulse_end, pulse_start)
-    distancia_cm = (duracao / 2) / 29.1
-    return distancia_cm
+    return ultra.distance_cm()
 
 
 # === FUNÇÕES DO BUZZER ===
@@ -167,46 +167,47 @@ def buzzer_on(freq=buzzer_freq):
 def buzzer_off():
     buzzer.duty(0)
 
-# # === FUNÇÕES DE LEITURA IR ===
-# def decode_ir():
-#     """Decodifica o protocolo NEC e retorna o comando (byte)."""
-#     # Espera início do sinal
-#     while ir_pin.value() == 1:
-#         pass
+# === FUNÇÕES DE LEITURA IR ===
+def decode_ir():
+    """Decodifica o protocolo NEC e retorna o comando (byte)."""
+    # Espera início do sinal
+    while ir_pin.value() == 1:
+        pass
 
-#     # Start sequence: ~9ms LOW + ~4.5ms HIGH
-#     if time_pulse_us(ir_pin, 0, 100000) < 8000:
-#         return None
-#     if time_pulse_us(ir_pin, 1, 100000) < 4000:
-#         return None
+    # Start sequence: ~9ms LOW + ~4.5ms HIGH
+    if time_pulse_us(ir_pin, 0, 100000) < 8000:
+        return None
+    if time_pulse_us(ir_pin, 1, 100000) < 4000:
+        return None
 
-#     # Lê 32 bits
-#     data = 0
-#     for i in range(32):
-#         time_pulse_us(ir_pin, 0, 100000)  # 560µs LOW
-#         t = time_pulse_us(ir_pin, 1, 100000)
-#         if t > 1000:  # ~1.69ms HIGH => bit 1
-#             data = (data << 1) | 1
-#         else:         # ~560µs HIGH => bit 0
-#             data = (data << 1)
+    # Lê 32 bits
+    data = 0
+    for i in range(32):
+        time_pulse_us(ir_pin, 0, 100000)  # 560µs LOW
+        t = time_pulse_us(ir_pin, 1, 100000)
+        if t > 1000:  # ~1.69ms HIGH => bit 1
+            data = (data << 1) | 1
+        else:         # ~560µs HIGH => bit 0
+            data = (data << 1)
 
-#     cmd = (data >> 16) & 0xFF
-#     inv_cmd = (data >> 8) & 0xFF
-#     if cmd != (inv_cmd ^ 0xFF):
-#         return None
+    cmd = (data >> 16) & 0xFF
+    inv_cmd = (data >> 8) & 0xFF
+    if cmd != (inv_cmd ^ 0xFF):
+        return None
 
-#     return cmd
-
-
-# def ir_button_code():
-#     """Lê o código numérico do botão pressionado."""
-#     code = None
-#     while code is None:
-#         code = decode_ir()
-#     return code
+    return cmd
 
 
-# def ir_button_name():
-#     """Retorna o nome do botão (ex: 'UP', '1', 'OK')."""
-#     code = ir_button_code()
-#     return IR_CODES.get(code, f"UNKNOWN({hex(code)})")
+def ir_button_code():
+    """Lê o código numérico do botão pressionado."""
+    code = None
+    while code is None:
+        code = decode_ir()
+    return code
+
+
+def ir_button_name():
+    """Retorna o nome do botão (ex: 'UP', '1', 'OK')."""
+    code = ir_button_code()
+    return IR_CODES.get(code, f"UNKNOWN({hex(code)})")
+

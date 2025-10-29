@@ -1,11 +1,12 @@
 from robot import *
 import time
-from machine import PWM
+from machine import Pin, PWM
 
-tocar_buzzer()
-
-led.value(1)
-andar_frente()
-time.sleep(10)
-parar()
-led.value(0)
+while (True):
+    dst = medir_distancia_cm()
+    print(dst)
+    if(dst > 10):
+        andar_frente()
+    else:
+        parar()
+    time.sleep(0.1)
