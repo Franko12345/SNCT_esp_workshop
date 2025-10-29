@@ -32,22 +32,22 @@ forBlock['right_motor_on'] = function (block, generator) {
 }
 
 forBlock['go_forward'] = function (block, generator) {
-  const code = 'go_forward()\n'; 
+  const code = 'andar_frente()\n'; 
   return code;
 }
 
 forBlock['go_backward'] = function (block, generator) {
-  const code = 'go_backward()\n'; 
+  const code = 'andar_tras()\n'; 
   return code;
 }
 
 forBlock['go_left'] = function (block, generator) {
-  const code = 'go_left()\n'; 
+  const code = 'girar_esquerda()\n'; 
   return code;
 }
 
 forBlock['go_right'] = function (block, generator) {
-  const code = 'go_right()\n'; 
+  const code = 'girar_direita()\n'; 
   return code;
 }
 
@@ -70,17 +70,17 @@ forBlock['drive_speed'] = function (block, generator) {
 }
 
 forBlock['stop'] = function (block, generator) {
-  const code = 'stop_motors()\n'; 
+  const code = 'parar()\n'; 
   return code;
 }
 
 forBlock['sound_buzzer'] = function (block, generator) {
-  const code = 'sound_buzzer()\n'; 
+  const code = 'buzzer_on()\n'; 
   return code;
 }
 
 forBlock['stop_buzzer'] = function (block, generator) {
-  const code = 'stop_buzzer()\n'; 
+  const code = 'buzzer_off()\n'; 
   return code;
 }
 
@@ -164,6 +164,6 @@ forBlock['program_loop'] = function(block, generator) {
 };
 
 forBlock['get_ultrasonic_distance'] = function (block, generator) {
-  const code = 'get_ultrasonic_distance()'; 
+  const code = 'medir_distancia_cm()'; 
   return [code, Order.FUNCTION_CALL];
 }

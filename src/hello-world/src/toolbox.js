@@ -677,34 +677,34 @@ export const toolbox = {
           kind: "block",
           type: "set_buzzer_duration",
         },
-        {
-          kind: "block",
-          type: "turn_on_led_one",
-        },
-        {
-          kind: "block",
-          type: "turn_off_led_one",
-        },
-        {
-          kind: "block",
-          type: "turn_on_led_two",
-        },
-        {
-          kind: "block",
-          type: "turn_off_led_two",
-        },
+        // {
+        //   kind: "block",
+        //   type: "turn_on_led_one",
+        // },
+        // {
+        //   kind: "block",
+        //   type: "turn_off_led_one",
+        // },
+        // {
+        //   kind: "block",
+        //   type: "turn_on_led_two",
+        // },
+        // {
+        //   kind: "block",
+        //   type: "turn_off_led_two",
+        // },
         {
           kind: "block",
           type: "get_ultrasonic_distance",
         },
-        {
-          kind: "block",
-          type: "ir_controller_read",
-        },
-        {
-          kind: "block",
-          type: "ir_controller_key",
-        },
+        // {
+        //   kind: "block",
+        //   type: "ir_controller_read",
+        // },
+        // {
+        //   kind: "block",
+        //   type: "ir_controller_key",
+        // },
       ],
     },
     {

@@ -14,12 +14,19 @@ PIN_ULTRASONIC_ECHO = 15
 PIN_ULTRASONIC_TRIG = 14
 PIN_IR = 16
 
+buzzer_freq = 1000
+buzzer_duracao = 0.3
+
 # Motores (controle simples — HIGH liga, LOW desliga)
 motor_frente_esq = PWM(Pin(PIN_MOTOR_ESQ_f, Pin.OUT), 1000)
 motor_tras_esq = PWM(Pin(PIN_MOTOR_ESQ_t, Pin.OUT), 1000)
 
 motor_frente_dir = PWM(Pin(PIN_MOTOR_DIR_f, Pin.OUT), 1000)
 motor_tras_dir = PWM(Pin(PIN_MOTOR_DIR_t, Pin.OUT), 1000)
+
+motor_left_speed = 512
+motor_right_speed = 512
+drive_speed = 512
 
 
 # Sensor Ultrassônico
@@ -52,6 +59,36 @@ IR_CODES = {
     0x1C: "OK"
 }
 
+def left_motor_on():
+    global motor_left_speed
+    motor_frente_esq.duty(motor_left_speed)
+    motor_tras_esq.duty(0)
+def left_motor_off():
+    motor_frente_esq.duty(0)
+    motor_tras_esq.duty(0)
+def right_motor_on():
+    global motor_right_speed
+    motor_frente_dir.duty(motor_right_speed)
+    motor_tras_dir.duty(0)
+def right_motor_off():
+    motor_frente_dir.duty(0)
+    motor_tras_dir.duty(0)
+
+def set_left_motor_speed(speed):
+    """Define a velocidade do motor esquerdo (0-1023)."""
+    global motor_left_speed
+    motor_left_speed = max(0, min(1023, speed))
+
+def set_right_motor_speed(speed):
+    """Define a velocidade do motor direito (0-1023)."""
+    global motor_right_speed
+    motor_right_speed = max(0, min(1023, speed))
+
+def set_drive_speed(speed):
+    """Define a velocidade padrão de movimento (0-1023)."""
+    global drive_speed
+    drive_speed = max(0, min(1023, speed))
+
 # === FUNÇÕES DE CONTROLE DE MOTORES ===
 def parar():
     motor_frente_dir.duty(0)
@@ -61,26 +98,32 @@ def parar():
     motor_tras_esq.duty(0)
 
 def andar_frente():
-    motor_frente_dir.duty(512)
+    motor_frente_dir.duty(drive_speed)
     motor_tras_dir.duty(0)
 
-    motor_frente_esq.duty(512)
+    motor_frente_esq.duty(drive_speed)
     motor_tras_esq.duty(0)
 
+def andar_tras():
+    motor_frente_dir.duty(drive_speed)
+    motor_tras_dir.duty(0)
+
+    motor_frente_esq.duty(drive_speed)
+    motor_tras_esq.duty(0)
 
 def girar_esquerda():
-    motor_frente_dir.duty(512)
+    motor_frente_dir.duty(drive_speed)
     motor_tras_dir.duty(0)
 
     motor_frente_esq.duty(0)
-    motor_tras_esq.duty(512)
+    motor_tras_esq.duty(drive_speed)
 
 
 def girar_direita():
     motor_frente_dir.duty(0)
-    motor_tras_dir.duty(512)
+    motor_tras_dir.duty(drive_speed)
 
-    motor_frente_esq.duty(512)
+    motor_frente_esq.duty(drive_speed)
     motor_tras_esq.duty(0)
 
 
@@ -103,13 +146,21 @@ def medir_distancia_cm():
 
 
 # === FUNÇÕES DO BUZZER ===
-def tocar_buzzer(freq=1000, duracao=0.3):
+def tocar_buzzer(freq=buzzer_freq, duracao=buzzer_duracao):
     buzzer.freq(freq)
     buzzer.duty(512) # 50%
     sleep(duracao)
     buzzer.duty(0)
 
-def buzzer_on(freq=1000):
+def set_buzzer_duration(duracao):
+    global buzzer_duracao
+    buzzer_duracao = duracao
+
+def set_buzzer_frequency(freq):
+    global buzzer_freq
+    buzzer_freq = freq
+
+def buzzer_on(freq=buzzer_freq):
     buzzer.freq(freq)
     buzzer.duty(512) # 50%
 

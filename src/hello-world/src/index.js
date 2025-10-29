@@ -79,3 +79,165 @@ ws.addChangeListener((e) => {
   }
   runCode();
 });
+
+/* --- Simple tab switcher --- */
+    const tabBlockly = document.getElementById('tabBlockly');
+    const tabIDE = document.getElementById('tabIDE');
+    const blocklySection = document.getElementById('blocklySection');
+    const ideSection = document.getElementById('senderSection');
+
+    tabBlockly.onclick = () => {
+      tabBlockly.classList.add('active');
+      tabIDE.classList.remove('active');
+      blocklySection.classList.add('active');
+      ideSection.classList.remove('active');
+    };
+    tabIDE.onclick = () => {
+      tabIDE.classList.add('active');
+      tabBlockly.classList.remove('active');
+      ideSection.classList.add('active');
+      blocklySection.classList.remove('active');
+    };
+    // CONFIGURÁVEL
+    const DEFAULT_SERVER = '0.0.0.0'; // altere aqui se desejar
+
+    // Elementos
+    const textarea = document.getElementById('code');
+    const sendBtn = document.getElementById('sendBtn');
+    const runBtn = document.getElementById('runBtn');
+    const logEl = document.getElementById('log');
+    const serverInput = document.getElementById('serverInput');
+    const serverLabel = document.getElementById('serverLabel');
+    const clearBtn = document.getElementById('clearBtn');
+
+    // Inicializa
+    serverInput.value = DEFAULT_SERVER;
+    serverLabel.textContent = DEFAULT_SERVER;
+
+    function log(msg, type){
+      const time = new Date().toLocaleTimeString();
+      const line = document.createElement('div');
+      line.textContent = `[${time}] ${msg}`;
+      if(type === 'err') line.style.color = 'var(--danger)';
+      else if(type === 'ok') line.style.color = 'var(--success)';
+      logEl.prepend(line);
+    }
+
+    function setUIBusy(busy, sending=true){
+      sendBtn.disabled = busy;
+      sendBtn.textContent = busy ? (sending ? 'Enviando...' : "Rodando...") : 'Enviar Código';
+      runBtn.disabled = busy;
+      runBtn.textContent = busy ? (sending ? 'Enviando...' : "Rodando...") : 'Rodar Código';
+    }
+
+    // keyboard shortcut Ctrl+Enter
+    textarea.addEventListener('keydown', (e)=>{
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter'){
+        e.preventDefault();
+        sendBtn.click();
+      }
+    });
+
+    // Atualiza label quando muda
+    serverInput.addEventListener('input', ()=>{
+      serverLabel.textContent = serverInput.value || DEFAULT_SERVER;
+    });
+
+    clearBtn.addEventListener('click', ()=>{ textarea.value = ''; log('Editor limpo.'); textarea.focus(); });
+
+    // Função principal de envio
+    async function sendCodeFlow(){
+      const server = (serverInput.value || DEFAULT_SERVER).trim().replace(/\/+$/, ''); // remove trailing slash
+      serverLabel.textContent = server;
+      // const code = textarea.value;
+      const code = pythonGenerator.workspaceToCode(ws);
+      // if (!code || code.trim().length === 0){ log('O campo está vazio — nada a enviar.', 'err'); return; }
+
+      // 1) enviar size como argumento (GET ?size=)
+      setUIBusy(true, true);
+      // 2) enviar código no body (POST /code)
+      try {
+        const codeUrl = `${server}/code`;
+        log(`Enviando código para: ${codeUrl}`);
+        const respCode = await fetch(codeUrl, {
+          method: 'POST',
+          // mode: 'cors',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8',
+          },
+          body: code,
+        });
+
+        if (!respCode.ok) {
+          const txt = await safeText(respCode);
+          throw new Error(`Status ${respCode.status} — ${txt || 'sem corpo'}`);
+        }
+
+        const responseText = await safeText(respCode);
+        log(`Código enviado com sucesso (status ${respCode.status}).`, 'ok');
+        if (responseText) log(`Resposta do servidor: ${responseText}`);
+      } catch (err) {
+        log(`Falha ao enviar código: ${err.message}`, 'err');
+      } finally {
+        setUIBusy(false);
+      }
+    }
+
+    async function stopCode(){
+      setUIBusy(true, false);
+      const server = (serverInput.value || DEFAULT_SERVER).trim().replace(/\/+$/, ''); // remove trailing slash
+        const codeUrl = `${server}/restart`;
+        log(`Parando o código`);
+        try{
+          const respCode = await fetch(codeUrl, {
+            method: 'POST',
+          });
+        }catch(err){
+          console.log(err);
+        }
+
+        setUIBusy(false);
+    }
+
+    async function sendRunSignal(){
+      const server = (serverInput.value || DEFAULT_SERVER).trim().replace(/\/+$/, ''); // remove trailing slash
+      serverLabel.textContent = server;
+
+      setUIBusy(true, false);
+
+      try {
+        const runUrl = `${server}/run`;
+        log(`Enviando sinal de execução para: ${runUrl}`);
+        const respCode = await fetch(runUrl, {
+          method: 'POST',
+        });
+
+        if (!respCode.ok) {
+          const txt = await safeText(respCode);
+          throw new Error(`Status ${respCode.status} — ${txt || 'sem corpo'}`);
+        }
+
+        const responseText = await safeText(respCode);
+        log(`Código enviado com sucesso (status ${respCode.status}).`, 'ok');
+        if (responseText) log(`Resposta do servidor: ${responseText}`);
+      } catch (err) {
+        log(`Falha ao enviar código: ${err.message}`, 'err');
+      } finally {
+        setUIBusy(false);
+      }
+    }
+    async function safeText(resp){
+      try { return await resp.text(); } catch(e){ return null; }
+    }
+
+    sendBtn.addEventListener('click', sendCodeFlow);
+    runBtn.addEventListener('click', sendRunSignal);
+    stopBtn.addEventListener('click', stopCode);
+
+    // Sugestão visual: preencha um código de exemplo curto
+    textarea.value = `from machine import Pin\nimport time\nled = Pin(2, Pin.OUT)\nwhile(True):\n    led.value(not led.value())\n    time.sleep(1)`;
+    textarea.focus();
+    textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+
+    // Avisos iniciais:
+    log('Pronto. Verifique se o servidor em 192.168.3.50 aceita CORS e se não há bloqueio por mixed-content (HTTPS).');
