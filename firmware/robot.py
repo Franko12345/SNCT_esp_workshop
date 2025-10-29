@@ -35,9 +35,9 @@ motor_tras_esq.init(1000, 0)
 motor_frente_dir.init(1000, 0)
 motor_tras_dir.init(1000, 0)
 
-motor_left_speed = 512
-motor_right_speed = 512
-drive_speed = 512
+motor_left_speed = 768
+motor_right_speed = 768
+drive_speed = 768
 
 
 # Sensor Ultrassônico
@@ -142,7 +142,11 @@ def girar_direita():
 
 # === FUNÇÕES DO SENSOR ULTRASSÔNICO ===
 def medir_distancia_cm():
-    return ultra.distance_cm()
+    ret = ultra.distance_cm()
+    while ret < 0:
+        ret = ultra.distance_cm()
+    
+    return ret
 
 
 # === FUNÇÕES DO BUZZER ===
