@@ -117,7 +117,7 @@ forBlock['turn_off_led_two'] = function (block, generator) {
 }
 
 forBlock['ir_controller_read'] = function (block, generator) {
-  const code = 'ir_controller_read()'; 
+  const code = 'ir_button_name()'; 
   return [code, Order.FUNCTION_CALL];
 }
 
