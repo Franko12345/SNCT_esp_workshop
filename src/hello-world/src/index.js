@@ -26,7 +26,7 @@ const textarea = document.getElementById('code');
 const ws = Blockly.inject(blocklyDiv, {
   toolbox: toolbox,
   theme: DarkTheme,
-  renderer: 'zelos',
+  renderer: 'Thrasos',
   zoom: {
     controls: true, // Adiciona botões de zoom (+ e -) e ajuste
     wheel: true,    // Habilita o zoom com a roda do mouse/scroll
@@ -34,6 +34,12 @@ const ws = Blockly.inject(blocklyDiv, {
     maxScale: 3,     // Zoom máximo permitido
     minScale: 0.3,   // Zoom mínimo permitido
     scaleSpeed: 1.2  // Velocidade de alteração do zoom
+  },
+  grid: {
+    spacing: 25, // Espaçamento entre os pontos
+    length: 3,   // Comprimento da linha (para grade pontilhada)
+    colour: '#ccc', // Cor da grade
+    snap: true   // Força o bloco a "grudar" na grade
   }
 });
 

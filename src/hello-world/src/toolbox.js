@@ -701,14 +701,14 @@ export const toolbox = {
           kind: "block",
           type: "get_ultrasonic_distance",
         },
-        // {
-        //   kind: "block",
-        //   type: "ir_controller_read",
-        // },
-        // {
-        //   kind: "block",
-        //   type: "ir_controller_key",
-        // },
+        {
+          kind: "block",
+          type: "ir_controller_read",
+        },
+        {
+          kind: "block",
+          type: "ir_controller_key",
+        },
       ],
     },
     {
