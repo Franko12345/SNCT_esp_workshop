@@ -23,15 +23,17 @@ def do_connect():
     wlan.active(False)
     wlan.active(True)
 
-    wlan.config(dhcp_hostname="esp_kit")
+    wlan.config(dhcp_hostname="esp_kit1")
 
     if not wlan.isconnected():
         print('connecting to network...')
-        wlan.connect('salob', '12345678')
+        wlan.connect('snct', '0011223344')
         while not wlan.isconnected():
             machine.idle()
     addr = wlan.ifconfig()
     print('network config: ', addr)
+
+tocar_buzzer()
 
 do_connect()
 
