@@ -1,5 +1,6 @@
 from machine import Pin, PWM, time_pulse_us
 from time import sleep, sleep_us, ticks_us, ticks_diff
+from ultrassonic import HCSR04
 
 # === DEFINIÇÃO DE PINOS ===
 
@@ -10,8 +11,8 @@ PIN_MOTOR_DIR_f = 33
 PIN_LED_1 = 18
 PIN_LED_2 = 20
 PIN_BUZZER = 14
-PIN_ULTRASONIC_ECHO = 26
-PIN_ULTRASONIC_TRIG = 25
+PIN_ULTRASONIC_ECHO = 25
+PIN_ULTRASONIC_TRIG = 26
 PIN_IR = 27
 
 # Motores (controle simples — HIGH liga, LOW desliga)
@@ -33,8 +34,7 @@ motor_tras_dir.init(1000, 0)
 
 
 # Sensor Ultrassônico
-trig = Pin(PIN_ULTRASONIC_TRIG, Pin.OUT)
-echo = Pin(PIN_ULTRASONIC_ECHO, Pin.IN)
+ultra = HCSR04(PIN_ULTRASONIC_TRIG, PIN_ULTRASONIC_ECHO)
 
 # Receptor IR
 ir_pin = Pin(PIN_IR, Pin.IN)
@@ -100,20 +100,7 @@ def girar_direita():
 
 # === FUNÇÕES DO SENSOR ULTRASSÔNICO ===
 def medir_distancia_cm():
-    trig.off()
-    sleep_us(2)
-    trig.on()
-    sleep_us(10)
-    trig.off()
-
-    while echo.value() == 0:
-        pulse_start = ticks_us()
-    while echo.value() == 1:
-        pulse_end = ticks_us()
-
-    duracao = ticks_diff(pulse_end, pulse_start)
-    distancia_cm = (duracao / 2) / 29.1
-    return distancia_cm
+    return ultra.distance_cm()
 
 
 # === FUNÇÕES DO BUZZER ===
