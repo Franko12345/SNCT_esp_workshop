@@ -30,6 +30,9 @@ const ws = Blockly.inject(blocklyDiv, {
 // In a real application, you probably shouldn't use `eval`.
 const runCode = () => {
   const code = pythonGenerator.workspaceToCode(ws);
+
+
+  // STRING DO CÓDIGO GERADO
   codeDiv.innerText = code;
 
   console.log("bolas");
