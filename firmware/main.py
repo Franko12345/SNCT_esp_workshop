@@ -2,20 +2,21 @@ import network
 import esp
 import time
 import _thread
+import uasyncio as asyncio
 from machine import Pin
 import machine
 from microdot import Microdot, Response, send_file
 from microdot_cors import CORS
 import machine
 
+from robot import *
 
 machine.freq(240000000)
 addr = ""
 def do_connect():
     global addr
     import machine, network
-
-
+    
     network.WLAN(network.AP_IF).active(False)
 
     wlan = network.WLAN(network.STA_IF)
@@ -26,7 +27,7 @@ def do_connect():
 
     if not wlan.isconnected():
         print('connecting to network...')
-        wlan.connect('CLARO_2G2FE5EC', 'EF2FE5EC')
+        wlan.connect('salob', '12345678')
         while not wlan.isconnected():
             machine.idle()
     addr = wlan.ifconfig()
@@ -78,16 +79,11 @@ async def index(requests):
     request.app.shutdown()
     return Response("Desligando...")
 
-def reset_code():
-    time.sleep(1)
-    machine.soft_reset()
 
 @app.route('/restart', methods=["GET", "POST"])
 async def index(requests):
-    _thread.start_new_thread(reset_code, ())
+    machine.soft_reset()
     return Response("Restarting...")
 
 
 app.run(port=80, debug=True)
-
-z

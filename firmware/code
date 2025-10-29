@@ -1,0 +1,11 @@
+from robot import *
+import time
+from machine import PWM
+
+tocar_buzzer()
+
+led.value(1)
+andar_frente()
+time.sleep(10)
+parar()
+led.value(0)

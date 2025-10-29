@@ -3,8 +3,10 @@ from time import sleep, sleep_us, ticks_us, ticks_diff
 
 # === DEFINIÇÃO DE PINOS ===
 
-PIN_MOTOR_ESQ = 12
-PIN_MOTOR_DIR = 13
+PIN_MOTOR_ESQ_t = 10
+PIN_MOTOR_ESQ_f = 11
+PIN_MOTOR_DIR_t = 12
+PIN_MOTOR_DIR_f = 13
 PIN_LED_1 = 18
 PIN_LED_2 = 19
 PIN_BUZZER = 17
@@ -13,8 +15,12 @@ PIN_ULTRASONIC_TRIG = 14
 PIN_IR = 16
 
 # Motores (controle simples — HIGH liga, LOW desliga)
-motor_esq = Pin(PIN_MOTOR_ESQ, Pin.OUT)
-motor_dir = Pin(PIN_MOTOR_DIR, Pin.OUT)
+motor_frente_esq = PWM(Pin(PIN_MOTOR_ESQ_f, Pin.OUT), 1000)
+motor_tras_esq = PWM(Pin(PIN_MOTOR_ESQ_t, Pin.OUT), 1000)
+
+motor_frente_dir = PWM(Pin(PIN_MOTOR_DIR_f, Pin.OUT), 1000)
+motor_tras_dir = PWM(Pin(PIN_MOTOR_DIR_t, Pin.OUT), 1000)
+
 
 # Sensor Ultrassônico
 trig = Pin(PIN_ULTRASONIC_TRIG, Pin.OUT)
@@ -24,7 +30,7 @@ echo = Pin(PIN_ULTRASONIC_ECHO, Pin.IN)
 ir_pin = Pin(PIN_IR, Pin.IN)
 
 # Buzzer
-buzzer = PWM(Pin(PIN_BUZZER), 500)
+buzzer = PWM(Pin(PIN_BUZZER), 1000)
 
 IR_CODES = {
     0x45: "1",
@@ -48,20 +54,34 @@ IR_CODES = {
 
 # === FUNÇÕES DE CONTROLE DE MOTORES ===
 def parar():
-    motor_esq.off()
-    motor_dir.off()
+    motor_frente_dir.duty(0)
+    motor_tras_dir.duty(0)
+
+    motor_frente_esq.duty(0)
+    motor_tras_esq.duty(0)
 
 def andar_frente():
-    motor_esq.on()
-    motor_dir.on()
+    motor_frente_dir.duty(512)
+    motor_tras_dir.duty(0)
+
+    motor_frente_esq.duty(512)
+    motor_tras_esq.duty(0)
+
 
 def girar_esquerda():
-    motor_esq.off()
-    motor_dir.on()
+    motor_frente_dir.duty(512)
+    motor_tras_dir.duty(0)
+
+    motor_frente_esq.duty(0)
+    motor_tras_esq.duty(512)
+
 
 def girar_direita():
-    motor_esq.on()
-    motor_dir.off()
+    motor_frente_dir.duty(0)
+    motor_tras_dir.duty(512)
+
+    motor_frente_esq.duty(512)
+    motor_tras_esq.duty(0)
 
 
 # === FUNÇÕES DO SENSOR ULTRASSÔNICO ===
@@ -85,57 +105,57 @@ def medir_distancia_cm():
 # === FUNÇÕES DO BUZZER ===
 def tocar_buzzer(freq=1000, duracao=0.3):
     buzzer.freq(freq)
-    buzzer.duty_u16(32768) # 50%
+    buzzer.duty(512) # 50%
     sleep(duracao)
-    buzzer.duty_u16(0)
+    buzzer.duty(0)
 
 def buzzer_on(freq=1000):
     buzzer.freq(freq)
-    buzzer.duty_u16(32768) # 50%
+    buzzer.duty(512) # 50%
 
 def buzzer_off():
-    buzzer.duty_u16(0)
+    buzzer.duty(0)
 
-# === FUNÇÕES DE LEITURA IR ===
-def decode_ir():
-    """Decodifica o protocolo NEC e retorna o comando (byte)."""
-    # Espera início do sinal
-    while ir_pin.value() == 1:
-        pass
+# # === FUNÇÕES DE LEITURA IR ===
+# def decode_ir():
+#     """Decodifica o protocolo NEC e retorna o comando (byte)."""
+#     # Espera início do sinal
+#     while ir_pin.value() == 1:
+#         pass
 
-    # Start sequence: ~9ms LOW + ~4.5ms HIGH
-    if time_pulse_us(ir_pin, 0, 100000) < 8000:
-        return None
-    if time_pulse_us(ir_pin, 1, 100000) < 4000:
-        return None
+#     # Start sequence: ~9ms LOW + ~4.5ms HIGH
+#     if time_pulse_us(ir_pin, 0, 100000) < 8000:
+#         return None
+#     if time_pulse_us(ir_pin, 1, 100000) < 4000:
+#         return None
 
-    # Lê 32 bits
-    data = 0
-    for i in range(32):
-        time_pulse_us(ir_pin, 0, 100000)  # 560µs LOW
-        t = time_pulse_us(ir_pin, 1, 100000)
-        if t > 1000:  # ~1.69ms HIGH => bit 1
-            data = (data << 1) | 1
-        else:         # ~560µs HIGH => bit 0
-            data = (data << 1)
+#     # Lê 32 bits
+#     data = 0
+#     for i in range(32):
+#         time_pulse_us(ir_pin, 0, 100000)  # 560µs LOW
+#         t = time_pulse_us(ir_pin, 1, 100000)
+#         if t > 1000:  # ~1.69ms HIGH => bit 1
+#             data = (data << 1) | 1
+#         else:         # ~560µs HIGH => bit 0
+#             data = (data << 1)
 
-    cmd = (data >> 16) & 0xFF
-    inv_cmd = (data >> 8) & 0xFF
-    if cmd != (inv_cmd ^ 0xFF):
-        return None
+#     cmd = (data >> 16) & 0xFF
+#     inv_cmd = (data >> 8) & 0xFF
+#     if cmd != (inv_cmd ^ 0xFF):
+#         return None
 
-    return cmd
-
-
-def ir_button_code():
-    """Lê o código numérico do botão pressionado."""
-    code = None
-    while code is None:
-        code = decode_ir()
-    return code
+#     return cmd
 
 
-def ir_button_name():
-    """Retorna o nome do botão (ex: 'UP', '1', 'OK')."""
-    code = ir_button_code()
-    return IR_CODES.get(code, f"UNKNOWN({hex(code)})")
+# def ir_button_code():
+#     """Lê o código numérico do botão pressionado."""
+#     code = None
+#     while code is None:
+#         code = decode_ir()
+#     return code
+
+
+# def ir_button_name():
+#     """Retorna o nome do botão (ex: 'UP', '1', 'OK')."""
+#     code = ir_button_code()
+#     return IR_CODES.get(code, f"UNKNOWN({hex(code)})")
