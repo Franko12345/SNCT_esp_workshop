@@ -237,7 +237,6 @@ ws.addChangeListener((e) => {
     stopBtn.addEventListener('click', stopCode);
 
     // Sugestão visual: preencha um código de exemplo curto
-    textarea.value = `from machine import Pin\nimport time\nled = Pin(2, Pin.OUT)\nwhile(True):\n    led.value(not led.value())\n    time.sleep(1)`;
     textarea.focus();
     textarea.setSelectionRange(textarea.value.length, textarea.value.length);
 

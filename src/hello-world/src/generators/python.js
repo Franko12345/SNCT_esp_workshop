@@ -135,7 +135,7 @@ forBlock['ir_controller_key'] = function (block, generator) {
 
 forBlock['program_setup'] = function(block, generator) {
   // Extrai o código dos blocos conectados à área de encaixe "DO"
-  const statements = generator.statementToCode(block, 'DO');
+  const statements = generator.statementToCode(block, 'DO') === '' ? generator.prefixLines('pass', generator.INDENT) : generator.statementToCode(block, 'DO');
   
   // Define o código da função setup()
   const code = `def setup():\n${generator.prefixLines(statements, generator.INDENT)}\n\n`;
@@ -151,7 +151,7 @@ forBlock['wait_time'] = function (block, generator) {
 // 2. Gerador para o bloco LOOP
 forBlock['program_loop'] = function(block, generator) {
   // Extrai o código dos blocos conectados à área de encaixe "DO"
-  const statements = generator.statementToCode(block, 'DO');
+  const statements = generator.statementToCode(block, 'DO') === '' ? generator.prefixLines('pass', generator.INDENT) : generator.statementToCode(block, 'DO');
 
   // Define o código da função loop() e a lógica de execução principal
   const code = `def loop():\n${generator.prefixLines(statements, generator.INDENT)}\n\n`;
