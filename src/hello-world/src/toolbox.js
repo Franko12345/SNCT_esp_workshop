@@ -709,6 +709,10 @@ export const toolbox = {
           kind: "block",
           type: "ir_controller_key",
         },
+        {
+          kind: "block",
+          type: "print_block",
+        },
       ],
     },
     {

@@ -344,6 +344,23 @@ const waitTime = {
   "helpUrl": ""
 };
 
+const printBlock = {
+  "type": "print_block",
+  "message0": "Imprimir %1",
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "TEXT",
+      "check": "String"
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": "#B941F1",
+  "tooltip": "Imprime um texto no console.",
+  "helpUrl": ""
+};
+
 // Create the block definitions for the JSON-only blocks.
 // This does not register their definitions with Blockly.
 // This file has no side effects!
@@ -373,5 +390,6 @@ export const robotBlocks = Blockly.common.createBlockDefinitionsFromJsonArray([
   setup,
   loop,
   conrollerButtons,
-  waitTime
+  waitTime,
+  printBlock
 ]);

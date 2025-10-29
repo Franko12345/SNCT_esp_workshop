@@ -172,3 +172,9 @@ forBlock['get_ultrasonic_distance'] = function (block, generator) {
   const code = 'medir_distancia_cm()'; 
   return [code, Order.FUNCTION_CALL];
 }
+
+forBlock['print_block'] = function (block, generator) {
+  const message = generator.valueToCode(block, 'TEXT', Order.NONE) || "''";
+  const code = `print(${message})\n`; 
+  return code;
+}
