@@ -20,7 +20,7 @@ Object.assign(pythonGenerator.forBlock, forBlock);
 
 // Set up UI elements and inject Blockly
 const codeDiv = document.getElementById('generatedCode').firstChild;
-const outputDiv = document.getElementById('output');
+// const outputDiv = document.getElementById('output');
 const blocklyDiv = document.getElementById('blocklyDiv');
 const textarea = document.getElementById('code');
 const ws = Blockly.inject(blocklyDiv, {
@@ -56,7 +56,7 @@ const runCode = () => {
 
   console.log("bolas");
 
-  outputDiv.innerHTML = '';
+  // outputDiv.innerHTML = '';
 
   // eval(code);
 };
@@ -248,3 +248,43 @@ ws.addChangeListener((e) => {
 
     // Avisos iniciais:
     log('Pronto. Verifique se o servidor em 192.168.3.50 aceita CORS e se não há bloqueio por mixed-content (HTTPS).');
+
+// index.js
+
+// ... (Resto do seu código) ...
+
+// Obtenha a referência ao painel de saída e ao botão
+const outputDiv = document.getElementById('outputPane');
+const toggleButtonIn = document.getElementById('toggleOutputIn');
+const toggleButtonOut = document.getElementById('toggleOutputOut');
+
+// A função que será chamada ao clicar no botão
+const toggleOutputPanelOut = () => {
+    // Alterna a classe 'hidden' no painel
+    outputDiv.classList.toggle('hidden');
+    
+    // OPCIONAL: Se você usou a classe 'visible' no CSS (não essencial)
+    // outputDiv.classList.toggle('visible'); 
+};
+
+// Adiciona o listener ao botão
+if (toggleButtonOut) {
+    toggleButtonOut.addEventListener('click', toggleOutputPanelOut);
+}
+const toggleOutputPanelIn = () => {
+    // Alterna a classe 'hidden' no painel
+    outputDiv.classList.toggle('hidden');
+    
+    // OPCIONAL: Se você usou a classe 'visible' no CSS (não essencial)
+    // outputDiv.classList.toggle('visible'); 
+};
+
+// Adiciona o listener ao botão
+if (toggleButtonIn) {
+    toggleButtonIn.addEventListener('click', toggleOutputPanelIn);
+}
+
+// Opcional: Atualize a variável outputDiv no seu código existente
+// Se o seu painel de saída já estava sendo referenciado:
+// const outputDiv = document.getElementById('output'); 
+// O painel já está definido no escopo global para o resto do seu código usá-lo.

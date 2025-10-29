@@ -217,6 +217,7 @@
 
     #generatedCode {
       width: 100%;
+      height: 100%;
       background: #111a22;
       color: #aef;
       padding: 12px;
@@ -224,6 +225,7 @@
       font-size: 13px;
       overflow: auto;
       border-top: 1px solid rgba(255,255,255,0.1);
+      margin: 0;
     }
 
 </style>
@@ -232,7 +234,9 @@
   </head>
   <body>
     <header>
-    <h1>ESP32 Blockly IDE + Code Sender</h1>
+      <div style="flex-grow: 1; text-align: center;">
+        <h1>ESP32 Blockly IDE + Code Sender</h1>
+      </div>
     <nav>
       <button id="tabBlockly" class="tab active">🧩 Blockly</button>
       <button id="tabIDE" class="tab">💻 Sender</button>
@@ -242,9 +246,11 @@
     <section class="active" id="blocklySection">
 
       <div id="pageContainer">
-        <div id="outputPane">
+        <button id="toggleOutputIn">Mostrar Saída</button>
+        <div id="outputPane" class="output-panel hidden">
+          <!-- <button id="toggleOutputOut">Ocultar Saída</button> -->
           <pre id="generatedCode"><code></code></pre>
-          <div id="output"></div>
+          <!-- <div id="output"></div> -->
         </div>
         <div id="blocklyDiv"></div>
       </div>
