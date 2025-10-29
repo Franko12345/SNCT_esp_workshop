@@ -118,11 +118,11 @@ def andar_frente():
     motor_tras_esq.duty(0)
 
 def andar_tras():
-    motor_frente_dir.duty(drive_speed)
-    motor_tras_dir.duty(0)
+    motor_frente_dir.duty(0)
+    motor_tras_dir.duty(drive_speed)
 
-    motor_frente_esq.duty(drive_speed)
-    motor_tras_esq.duty(0)
+    motor_frente_esq.duty(0)
+    motor_tras_esq.duty(drive_speed)
 
 def girar_esquerda():
     motor_frente_dir.duty(drive_speed)

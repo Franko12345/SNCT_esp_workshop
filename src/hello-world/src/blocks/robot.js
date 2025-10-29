@@ -327,6 +327,23 @@ const loop = {
   "helpUrl": ""
 };
 
+const waitTime = {
+  "type": "wait_time",
+  "message0": "Esperar %1 s",
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "DURATION",
+      "check": "Number"
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": "#B941F1",
+  "tooltip": "Faz o programa esperar um determinado tempo em segundos.",
+  "helpUrl": ""
+};
+
 // Create the block definitions for the JSON-only blocks.
 // This does not register their definitions with Blockly.
 // This file has no side effects!
@@ -355,5 +372,6 @@ export const robotBlocks = Blockly.common.createBlockDefinitionsFromJsonArray([
   getControllerButton,
   setup,
   loop,
-  conrollerButtons
+  conrollerButtons,
+  waitTime
 ]);

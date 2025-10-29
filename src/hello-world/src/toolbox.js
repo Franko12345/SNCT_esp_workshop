@@ -677,6 +677,10 @@ export const toolbox = {
           kind: "block",
           type: "set_buzzer_duration",
         },
+        {
+          kind: "block",
+          type: "wait_time",
+        },
         // {
         //   kind: "block",
         //   type: "turn_on_led_one",

@@ -142,6 +142,11 @@ forBlock['program_setup'] = function(block, generator) {
   return code;
 };
 
+forBlock['wait_time'] = function (block, generator) {
+  const time = generator.valueToCode(block, 'DURATION', Order.NONE) || '0';
+  const code = `sleep(${time})\n`; 
+  return code;
+}
 
 // 2. Gerador para o bloco LOOP
 forBlock['program_loop'] = function(block, generator) {
