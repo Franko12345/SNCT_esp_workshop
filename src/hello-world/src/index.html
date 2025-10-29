@@ -279,6 +279,7 @@
          <div>
            <button id="sendBtn" class="btn" title="Enviar código">Enviar Código</button>
            <button id="runBtn" class="btn" title="Rodar código">Rodar Código</button>
+           <button id="stopBtn" class="btn" title="Parar código">Parar Código</button>
          </div>
        </div>
 
@@ -420,6 +421,22 @@
       }
     }
 
+    async function stopCode(){
+      setUIBusy(true, false);
+      const server = (serverInput.value || DEFAULT_SERVER).trim().replace(/\/+$/, ''); // remove trailing slash
+        const codeUrl = `${server}/restart`;
+        log(`Parando o código`);
+        try{
+          const respCode = await fetch(codeUrl, {
+            method: 'POST',
+          });
+        }catch(err){
+          console.log(err);
+        }
+
+        setUIBusy(false);
+    }
+
     async function sendRunSignal(){
       const server = (serverInput.value || DEFAULT_SERVER).trim().replace(/\/+$/, ''); // remove trailing slash
       serverLabel.textContent = server;
@@ -453,9 +470,10 @@
 
     sendBtn.addEventListener('click', sendCodeFlow);
     runBtn.addEventListener('click', sendRunSignal);
+    stopBtn.addEventListener('click', stopCode);
 
     // Sugestão visual: preencha um código de exemplo curto
-    textarea.value = `# Exemplo: imprime 'Olá mundo' e soma\nprint('Olá, mundo')\n\n# Exemplo de função\ndef soma(a,b):\n    return a+b\n\nprint(soma(2,3))`;
+    textarea.value = `from machine import Pin\nimport time\nled = Pin(2, Pin.OUT)\nwhile(True):\n    led.value(not led.value())\n    time.sleep(1)`;
     textarea.focus();
     textarea.setSelectionRange(textarea.value.length, textarea.value.length);
 

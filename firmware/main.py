@@ -6,6 +6,7 @@ from machine import Pin
 import machine
 from microdot import Microdot, Response, send_file
 from microdot_cors import CORS
+import machine
 
 
 machine.freq(240000000)
@@ -14,16 +15,18 @@ def do_connect():
     global addr
     import machine, network
 
+
     network.WLAN(network.AP_IF).active(False)
-    
+
     wlan = network.WLAN(network.STA_IF)
+    wlan.active(False)
     wlan.active(True)
 
     wlan.config(dhcp_hostname="esp_kit")
 
     if not wlan.isconnected():
         print('connecting to network...')
-        wlan.connect('Movel-JFDM', '98029811')
+        wlan.connect('CLARO_2G2FE5EC', 'EF2FE5EC')
         while not wlan.isconnected():
             machine.idle()
     addr = wlan.ifconfig()
@@ -49,7 +52,7 @@ async def index(request):
     code = request.body.decode("utf-8")
     with open("code", "w") as arq:
         arq.write(code)
-        
+
     print(code)
     return Response("Code Recieved successfully!")
 
@@ -63,15 +66,28 @@ async def index(request):
 async def index(request):
     try:
         with open("code", "r") as arq:
-            exec(arq.read())
+            _thread.start_new_thread(exec, (arq.read(),))
+            #exec(arq.read())
         return "Code Executed successfully!"
-    
+
     except Exception as e:
         return Response("Error: " + e)
-    
+
 @app.route('/off', methods=["GET", "POST"])
 async def index(requests):
     request.app.shutdown()
     return Response("Desligando...")
 
-app.run(port=80,debug=True)
+def reset_code():
+    time.sleep(1)
+    machine.soft_reset()
+
+@app.route('/restart', methods=["GET", "POST"])
+async def index(requests):
+    _thread.start_new_thread(reset_code, ())
+    return Response("Restarting...")
+
+
+app.run(port=80, debug=True)
+
+z

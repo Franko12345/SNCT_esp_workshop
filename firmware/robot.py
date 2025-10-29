@@ -1,6 +1,5 @@
 from machine import Pin, PWM, time_pulse_us
 from time import sleep, sleep_us, ticks_us, ticks_diff
-import micropython
 
 # === DEFINIÇÃO DE PINOS ===
 
@@ -25,7 +24,7 @@ echo = Pin(PIN_ULTRASONIC_ECHO, Pin.IN)
 ir_pin = Pin(PIN_IR, Pin.IN)
 
 # Buzzer
-buzzer = PWM(Pin(PIN_BUZZER))
+buzzer = PWM(Pin(PIN_BUZZER), 500)
 
 IR_CODES = {
     0x45: "1",
